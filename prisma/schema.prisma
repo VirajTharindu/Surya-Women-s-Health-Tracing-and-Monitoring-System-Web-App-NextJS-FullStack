@@ -1,0 +1,205 @@
+// Prisma Schema for Surya Women's Health System
+// Using Supabase PostgreSQL as the database provider
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────
+
+enum Role {
+  USER
+  MIDWIFE
+  ADMIN
+}
+
+enum FlowIntensity {
+  spotting
+  light
+  medium
+  heavy
+}
+
+enum Mood {
+  great
+  good
+  neutral
+  low
+  terrible
+}
+
+enum VitalType {
+  bp
+  glucose
+  weight
+}
+
+enum ReminderCategory {
+  medication
+  appointment
+  vaccination
+  checkup
+  other
+}
+
+// ─── User ───────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+
+  // Profile
+  name         String
+  dob          DateTime
+  heightCm     Float    @default(158)
+  location     String   @default("Colombo, Sri Lanka")
+  languagePref String   @default("en") // 'en' | 'si' | 'ta'
+
+  // Relations
+  cycleLogs    CycleLog[]
+  vitalLogs    VitalLog[]
+  reminders    Reminder[]
+  pinkBook     PinkBook?
+  auditLogs    AuditLog[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ─── Cycle Log (Menstrual Tracker) ──────────────────────────────────
+
+model CycleLog {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  date          DateTime
+  flowIntensity FlowIntensity
+  cramps        Int           // 1-5
+  mood          Mood
+  symptoms      String[]      // PostgreSQL array
+  note          String?
+
+  createdAt     DateTime      @default(now())
+
+  @@index([userId, date])
+}
+
+// ─── Vital Log (BP, Glucose, Weight) ────────────────────────────────
+
+model VitalLog {
+  id                  String   @id @default(cuid())
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  date                DateTime
+  vitalType           VitalType
+  value               Json     // Flexible: { systolic, diastolic } | { value, timing } | { kg, bmi }
+  classification      String   // e.g. 'Normal', 'Elevated', 'Pre-diabetic'
+  classificationColor String   // 'success' | 'warning' | 'error' | 'info'
+
+  createdAt           DateTime @default(now())
+
+  @@index([userId, date])
+  @@index([userId, vitalType])
+}
+
+// ─── Reminders ──────────────────────────────────────────────────────
+
+model Reminder {
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+  time        DateTime         // Used as priority for the PriorityQueue
+  category    ReminderCategory
+  isCompleted Boolean          @default(false)
+
+  createdAt   DateTime         @default(now())
+
+  @@index([userId, time])
+}
+
+// ─── Pink Book (Maternal & Child Health Record) ─────────────────────
+
+model PinkBook {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Maternal
+  registrationNumber String   @default("")
+  registeredClinic   String   @default("")
+  edd                String   @default("") // Expected delivery date
+  ttDose1            Boolean  @default(false)
+  ttDose1Date        String   @default("")
+  ttDose2            Boolean  @default(false)
+  ttDose2Date        String   @default("")
+  ironAdherence      Int      @default(0) // 0-100 percentage
+
+  // Child
+  childName          String   @default("")
+  childDob           String   @default("")
+
+  // JSON arrays for complex nested data
+  ancVisits          Json     @default("[]")     // ANCVisit[]
+  vaccinations       Json     @default("[]")     // VaccinationRecord[]
+  growthRecords      Json     @default("[]")     // { date, weightKg, heightCm }[]
+
+  updatedAt          DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ─── Community Health Network (Graph Data for Kruskal's Algorithm) ──
+
+model Clinic {
+  id       String @id @default(cuid())
+  name     String @unique
+  type     String // 'rural' | 'urban' | 'hospital' | 'coastal' | 'hill_country'
+  location String
+
+  edgesFrom ClinicEdge[] @relation("EdgeFrom")
+  edgesTo   ClinicEdge[] @relation("EdgeTo")
+
+  // Resource allocation
+  demand   Int    @default(0)
+  priority Int    @default(5) // 1-10
+}
+
+model ClinicEdge {
+  id       String @id @default(cuid())
+  fromId   String
+  toId     String
+  weight   Int    // Distance/cost
+
+  from     Clinic @relation("EdgeFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  to       Clinic @relation("EdgeTo", fields: [toId], references: [id], onDelete: Cascade)
+
+  @@unique([fromId, toId])
+  @@index([fromId, toId])
+}
+
+// ─── Audit Logging ──────────────────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String   // e.g., 'CREATE_VITAL_LOG', 'UPDATE_CYCLE_LOG'
+  tableName String   // e.g., 'VitalLog', 'CycleLog'
+  recordId  String
+  timestamp DateTime @default(now())
+
+  @@index([userId, timestamp])
+  @@index([action])
+  @@index([tableName])
+}

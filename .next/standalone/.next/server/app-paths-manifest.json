@@ -1,0 +1,15 @@
+{
+  "/api/auth/register/route": "app/api/auth/register/route.js",
+  "/api/community/allocate/route": "app/api/community/allocate/route.js",
+  "/api/community/network-mst/route": "app/api/community/network-mst/route.js",
+  "/api/logs/cycle/route": "app/api/logs/cycle/route.js",
+  "/api/pinkbook/route": "app/api/pinkbook/route.js",
+  "/api/logs/vitals/route": "app/api/logs/vitals/route.js",
+  "/api/reminders/route": "app/api/reminders/route.js",
+  "/api/user/profile/route": "app/api/user/profile/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/auth/login/page": "app/auth/login/page.js",
+  "/page": "app/page.js",
+  "/auth/register/page": "app/auth/register/page.js"
+}

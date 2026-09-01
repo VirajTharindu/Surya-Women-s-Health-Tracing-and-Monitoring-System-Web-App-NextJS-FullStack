@@ -1,0 +1,46 @@
+# ── Node / npm ──────────────────────────────
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Next.js build output ────────────────────
+.next
+out
+
+# ── Tests & coverage ────────────────────────
+__tests__
+e2e
+perf
+coverage
+test-results
+playwright-report
+
+# ── Prisma (migrations stay in; generated client excluded) ──
+prisma/migrations
+
+# ── Environment & secrets ───────────────────
+.env
+.env.*
+!.env.example
+
+# ── Editor / OS ─────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode
+.idea
+
+# ── Git ─────────────────────────────────────
+.git
+.gitignore
+
+# ── Docker files (avoid recursion) ──────────
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# ── Misc ────────────────────────────────────
+*.md
+*.docx

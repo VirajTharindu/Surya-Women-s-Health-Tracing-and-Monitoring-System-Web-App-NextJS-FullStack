@@ -1,0 +1,74 @@
+version: '3.9'
+
+services:
+  # ── Next.js Application ──────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: surya_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Database
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/surya_dev
+      DIRECT_URL: postgresql://postgres:postgres@db:5432/surya_dev
+      # Auth (NextAuth / Auth.js)
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-supersecretkey_change_in_production}
+      # Supabase (optional in local Docker; set real values via .env)
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - surya_net
+
+  # ── PostgreSQL Database (mirrors Supabase schema locally) ────
+  db:
+    image: postgres:15-alpine
+    container_name: surya_db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: surya_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - surya_net
+
+  # ── Prisma Studio (dev convenience – remove in prod) ─────────
+  studio:
+    image: node:18-alpine
+    container_name: surya_studio
+    working_dir: /app
+    command: sh -c "npm install && npx prisma studio --port 5555 --browser none"
+    volumes:
+      - .:/app
+    ports:
+      - "5555:5555"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/surya_dev
+    depends_on:
+      - db
+    profiles:
+      - dev
+    networks:
+      - surya_net
+
+volumes:
+  postgres_data:
+
+networks:
+  surya_net:
+    driver: bridge

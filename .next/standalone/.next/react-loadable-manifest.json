@@ -1,0 +1,99 @@
+{
+  "..\\node_modules\\next\\dist\\client\\index.js -> ../pages/_app": {
+    "id": 45139,
+    "files": [
+      "static/chunks/5139.e4ff9cc3669129ed.js"
+    ]
+  },
+  "..\\node_modules\\next\\dist\\client\\index.js -> ../pages/_error": {
+    "id": 31646,
+    "files": [
+      "static/chunks/1646.a93085a0445ba909.js"
+    ]
+  },
+  "app\\page.tsx -> @/components/AwarenessContent": {
+    "id": 28683,
+    "files": [
+      "static/chunks/8548.b1a8a4214bf228eb.js",
+      "static/chunks/3082-b896304c38d7a38f.js",
+      "static/chunks/8010-7ca7804995f51e9a.js",
+      "static/chunks/9469.6b9b31fe77bb5c5f.js",
+      "static/chunks/8683.4f2290c51f4ca0ff.js"
+    ]
+  },
+  "app\\page.tsx -> @/components/EmergencyReferral": {
+    "id": 20579,
+    "files": [
+      "static/chunks/8548.b1a8a4214bf228eb.js",
+      "static/chunks/8554.3f66c81fd9ab3d36.js",
+      "static/chunks/579.c1d47c403a59c05f.js"
+    ]
+  },
+  "app\\page.tsx -> @/components/HealthCharts": {
+    "id": 13656,
+    "files": [
+      "static/chunks/8548.b1a8a4214bf228eb.js",
+      "static/chunks/9515.84c328b862d1fa10.js",
+      "static/chunks/3656.461bdd319bd9c084.js"
+    ]
+  },
+  "app\\page.tsx -> @/components/MenstrualTracker": {
+    "id": 59578,
+    "files": [
+      "static/chunks/8548.b1a8a4214bf228eb.js",
+      "static/chunks/3082-b896304c38d7a38f.js",
+      "static/chunks/7428.546e2f35350ad529.js",
+      "static/chunks/4196.ac97ce59713c7677.js",
+      "static/chunks/3812.b84a885965598051.js",
+      "static/chunks/9578.a32247f5d18b09d2.js"
+    ]
+  },
+  "app\\page.tsx -> @/components/PinkBook": {
+    "id": 51478,
+    "files": [
+      "static/chunks/8548.b1a8a4214bf228eb.js",
+      "static/chunks/3082-b896304c38d7a38f.js",
+      "static/chunks/7428.546e2f35350ad529.js",
+      "static/chunks/9004.1458dcc304ec81d7.js",
+      "static/chunks/5022.662d8a11ecd29217.js",
+      "static/chunks/1478.6629e40d2db3b455.js"
+    ]
+  },
+  "app\\page.tsx -> @/components/Reminders": {
+    "id": 13410,
+    "files": [
+      "static/chunks/8548.b1a8a4214bf228eb.js",
+      "static/chunks/3082-b896304c38d7a38f.js",
+      "static/chunks/7428.546e2f35350ad529.js",
+      "static/chunks/4196.ac97ce59713c7677.js",
+      "static/chunks/3410.68da427980e4e5b1.js"
+    ]
+  },
+  "app\\page.tsx -> @/components/ResourceAllocation": {
+    "id": 39664,
+    "files": [
+      "static/chunks/8548.b1a8a4214bf228eb.js",
+      "static/chunks/9004.1458dcc304ec81d7.js",
+      "static/chunks/9664.b331adac528c6884.js"
+    ]
+  },
+  "app\\page.tsx -> @/components/UserProfile": {
+    "id": 20231,
+    "files": [
+      "static/chunks/8554.3f66c81fd9ab3d36.js",
+      "static/chunks/4754.78909edc2f5780bf.js",
+      "static/chunks/231.d7d8adf91cdfa994.js"
+    ]
+  },
+  "app\\page.tsx -> @/components/VitalLogger": {
+    "id": 13461,
+    "files": [
+      "static/chunks/8548.b1a8a4214bf228eb.js",
+      "static/chunks/3082-b896304c38d7a38f.js",
+      "static/chunks/8010-7ca7804995f51e9a.js",
+      "static/chunks/7428.546e2f35350ad529.js",
+      "static/chunks/3677.db7a2ae44621f8be.js",
+      "static/chunks/3461.ecae59711de22db5.js"
+    ]
+  }
+}
