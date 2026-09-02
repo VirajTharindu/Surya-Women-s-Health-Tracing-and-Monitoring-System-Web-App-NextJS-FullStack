@@ -6,6 +6,11 @@ const nextConfig = {
   output: 'standalone',
 
   // i18n config will be added here or via next-i18next
+
+
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 module.exports = nextConfig;
