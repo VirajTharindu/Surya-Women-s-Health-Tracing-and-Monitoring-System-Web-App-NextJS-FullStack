@@ -37,7 +37,7 @@ export async function GET(request: Request) {
         const total = await prisma.vitalLog.count({ where });
 
         // Decrypt values before sending to client
-        const decryptedLogs = logs.map(log => {
+        const decryptedLogs = logs.map((log: any) => {
             let decryptedValue = log.value;
             // Check if it's our encrypted wrapper format
             if (typeof log.value === 'object' && log.value !== null && '_encryptedData' in (log.value as any)) {
@@ -87,7 +87,7 @@ export async function POST(request: Request) {
         }
 
         const data = validation.data;
-        
+
         // Encrypt the value field
         const stringifiedValue = JSON.stringify(data.value);
         const encryptedValue = { _encryptedData: encryptData(stringifiedValue) };
@@ -169,12 +169,12 @@ export async function PUT(request: Request) {
 
         let decryptedValue = data.value;
         if (data.value === undefined && typeof updated.value === 'object' && updated.value !== null && '_encryptedData' in (updated.value as any)) {
-             try {
-                 const decryptedString = decryptData((updated.value as any)._encryptedData);
-                 decryptedValue = JSON.parse(decryptedString);
-             } catch (e) {}
+            try {
+                const decryptedString = decryptData((updated.value as any)._encryptedData);
+                decryptedValue = JSON.parse(decryptedString);
+            } catch (e) { }
         } else if (data.value === undefined) {
-             decryptedValue = updated.value as any;
+            decryptedValue = updated.value as any;
         }
 
         return NextResponse.json({ ...updated, value: decryptedValue });
