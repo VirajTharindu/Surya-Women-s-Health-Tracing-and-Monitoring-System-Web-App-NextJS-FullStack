@@ -5,17 +5,16 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
     Container, Box, Typography, Grid, Paper, Tabs, Tab, AppBar, Toolbar,
-    Avatar, Chip, Stack, CircularProgress
+    Avatar, CircularProgress
 } from '@mui/material';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
-import InfoIcon from '@mui/icons-material/Info';
+
 import ChildCareIcon from '@mui/icons-material/ChildCare';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import HubIcon from '@mui/icons-material/Hub';
-import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy';
+
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
@@ -36,7 +35,7 @@ const ResourceAllocation = dynamic(() => import('@/components/ResourceAllocation
 import { useHealthStore } from '@/store/useHealthStore';
 
 export default function Home() {
-    const { data: session, status } = useSession();
+    const { status } = useSession();
     const router = useRouter();
     const [tabValue, setTabValue] = useState(0);
     const { language, userProfile, getCurrentCyclePhase, getNextPeriodDate, getVitalLogs, reminders, fetchInitialData } = useHealthStore();
@@ -57,7 +56,7 @@ export default function Home() {
         );
     }
 
-    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
     };
 
