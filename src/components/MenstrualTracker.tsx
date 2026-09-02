@@ -3,17 +3,17 @@
 import React, { useState, useMemo } from 'react';
 import {
     Box, Typography, Button, TextField, Dialog, DialogTitle,
-    DialogContent, DialogActions, Paper, Divider, Chip, Avatar,
+    DialogContent, DialogActions, Paper, Chip,
     Grid, Rating, ToggleButton, ToggleButtonGroup, IconButton,
-    Tooltip, Card, CardContent, Alert, Stack
+    Tooltip, Stack
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddIcon from '@mui/icons-material/Add';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useHealthStore, CycleLog } from '@/store/useHealthStore';
@@ -56,7 +56,7 @@ function getFirstDayOfMonth(year: number, month: number) {
 }
 
 export default function MenstrualTracker() {
-    const { logs, addLog, updateCycleLog, deleteCycleLog, language, getCycleLogs, getCycleSettings, getNextPeriodDate, getCurrentCyclePhase } = useHealthStore();
+    const { addLog, updateCycleLog, deleteCycleLog, language, getCycleLogs, getCycleSettings, getNextPeriodDate, getCurrentCyclePhase } = useHealthStore();
     const [open, setOpen] = useState(false);
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [note, setNote] = useState('');

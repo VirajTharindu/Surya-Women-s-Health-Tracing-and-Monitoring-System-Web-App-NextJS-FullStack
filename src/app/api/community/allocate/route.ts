@@ -6,7 +6,7 @@ import { greedyAllocate } from '@/lib/algorithms/community';
 // POST /api/community/allocate — Run greedy resource allocation across clinics
 export async function POST(request: Request) {
     try {
-        const session = await auth();
+        await auth();
 
         const body = await request.json();
         const availableStock = typeof body.stock === 'number' ? body.stock : 1000;

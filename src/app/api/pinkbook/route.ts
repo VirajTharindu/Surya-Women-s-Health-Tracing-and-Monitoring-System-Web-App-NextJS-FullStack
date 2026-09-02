@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { pinkBookUpdateSchema } from '@/lib/validations';
 
 // GET /api/pinkbook — Fetch Pink Book data for the authenticated user
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
     try {
         const session = await auth();
         if (!session?.user?.id) {

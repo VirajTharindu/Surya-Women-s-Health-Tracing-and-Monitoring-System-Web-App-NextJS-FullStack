@@ -8,9 +8,9 @@ let mstCache: { data: any, timestamp: number } | null = null;
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 // GET /api/community/network-mst — Calculate the optimized clinic network
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
     try {
-        const session = await auth();
+        await auth();
         
         // Midwife/Admin check can be added here if RBAC is strictly enforced
         // if (session?.user?.role !== 'MIDWIFE' && session?.user?.role !== 'ADMIN') {

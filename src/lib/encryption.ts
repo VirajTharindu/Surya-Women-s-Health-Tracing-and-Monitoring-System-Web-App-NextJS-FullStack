@@ -6,7 +6,6 @@ const ALGORITHM = 'aes-256-gcm';
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || '12345678901234567890123456789012'; // 32 bytes
 
 const IV_LENGTH = 16;
-const AUTH_TAG_LENGTH = 16;
 
 /**
  * Encrypts a string (or JSON stringified object) using AES-256-GCM

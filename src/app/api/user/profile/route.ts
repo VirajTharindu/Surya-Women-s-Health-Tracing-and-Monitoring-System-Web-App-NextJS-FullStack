@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { userProfileUpdateSchema } from '@/lib/validations';
 
 // GET /api/user/profile — Fetch current user profile
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
     try {
         const session = await auth();
         if (!session?.user?.id) {

@@ -142,7 +142,7 @@ export async function DELETE(request: Request) {
         if (!id) {
             return NextResponse.json({ error: 'CycleLog ID required' }, { status: 400 });
         }
-        const deleted = await prisma.cycleLog.delete({
+        await prisma.cycleLog.delete({
             where: { id, userId: session.user.id },
         });
 

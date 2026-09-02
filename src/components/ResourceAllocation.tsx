@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Box, Typography, Paper, Slider, Button, List, ListItem, ListItemText, Chip, Divider, Grid } from '@mui/material';
+import { Box, Typography, Paper, Slider, Chip, Grid } from '@mui/material';
 import { greedyAllocate, ClinicDemand } from '@/lib/algorithms/community';
 import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy';
 import { useHealthStore } from '@/store/useHealthStore';
@@ -70,7 +70,7 @@ export default function ResourceAllocation() {
                         value={stock}
                         min={0}
                         max={2000}
-                        onChange={(e, val) => setStock(val as number)}
+                        onChange={(_e, val) => setStock(val as number)}
                         sx={{ flexGrow: 1, color: 'secondary.main' }}
                     />
                     <Typography variant="h4" fontWeight={700} color="secondary">{stock}</Typography>
