@@ -81,8 +81,9 @@ export default function Home() {
     const bpLogs = getVitalLogs('bp');
     const lastBp = bpLogs.length > 0 ? bpLogs[bpLogs.length - 1] : null;
 
-    const upcomingReminders = reminders.toArray().filter(r => r.time >= Date.now()).sort((a, b) => a.time - b.time);
-    const nextReminder = upcomingReminders.length > 0 ? upcomingReminders[0] : null;
+    // Include both overdue and upcoming reminders; the first one is the most urgent.
+    const allActiveReminders = reminders.toArray().sort((a, b) => a.time - b.time);
+    const nextReminder = allActiveReminders.length > 0 ? allActiveReminders[0] : null;
 
     const summaryLabels = {
         en: { cycle: 'Cycle Phase', period: 'Next Period', bp: 'Last BP', reminder: 'Next Reminder', days: 'days' },

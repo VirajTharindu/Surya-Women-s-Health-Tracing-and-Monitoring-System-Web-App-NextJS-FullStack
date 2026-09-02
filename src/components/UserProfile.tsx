@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
 import { useHealthStore } from '@/store/useHealthStore';
+import { signOut } from 'next-auth/react';
 
 export default function UserProfile() {
     const { language, userProfile } = useHealthStore();
@@ -106,7 +107,13 @@ export default function UserProfile() {
                 </List>
             </Paper>
 
-            <Button variant="outlined" fullWidth color="error" sx={{ mt: 4, borderRadius: 6, py: 1.5, fontWeight: 700 }}>
+            <Button 
+                variant="outlined" 
+                fullWidth 
+                color="error" 
+                sx={{ mt: 4, borderRadius: 6, py: 1.5, fontWeight: 700 }}
+                onClick={() => signOut({ callbackUrl: '/auth/login' })}
+            >
                 {t.logout}
             </Button>
         </Box>
