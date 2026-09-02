@@ -217,6 +217,9 @@ jobs:
     environment:
       name: production
       url: ${{ steps.deploy.outputs.url }}
+    env:
+      VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+      VERCEL_PROJ_ID: ${{ secrets.VERCEL_PROJ_ID }}
 
     steps:
       - uses: actions/checkout@v4
