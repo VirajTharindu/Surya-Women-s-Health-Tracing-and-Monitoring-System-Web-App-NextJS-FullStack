@@ -5,14 +5,14 @@ import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     AreaChart, Area, ReferenceLine, ReferenceArea, Legend
 } from 'recharts';
-import { Box, Typography, Paper, ToggleButton, ToggleButtonGroup, Chip, Stack } from '@mui/material';
+import { Box, Typography, Paper, ToggleButton, ToggleButtonGroup, Chip } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import BloodtypeIcon from '@mui/icons-material/Bloodtype';
 import MonitorWeightIcon from '@mui/icons-material/MonitorWeight';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
-import { useHealthStore, VitalLog } from '@/store/useHealthStore';
+import { useHealthStore } from '@/store/useHealthStore';
 
-const CustomTooltip = ({ active, payload, label, metric }: any) => {
+const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null;
 
     return (
