@@ -1,4 +1,4 @@
-name: CI / CD – Surya Women's Health
+name: CI / CD - Surya Women''s Health
 
 on:
   push:
@@ -9,9 +9,9 @@ on:
 env:
   IMAGE_NAME: surya-womens-health
 
-# ─────────────────────────────────────────────────────────────
-# Job 1 – Lint & Type-check
-# ─────────────────────────────────────────────────────────────
+# -------------------------------------------------------------
+# Job 1 - Lint & Type-check
+# -------------------------------------------------------------
 jobs:
   lint:
     name: Lint & Type-check
@@ -26,7 +26,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Run ESLint
         run: npm run lint
@@ -34,9 +34,9 @@ jobs:
       - name: Type-check
         run: npx tsc --noEmit
 
-# ─────────────────────────────────────────────────────────────
-# Job 2 – Unit & Integration Tests + Coverage
-# ─────────────────────────────────────────────────────────────
+# -------------------------------------------------------------
+# Job 2 - Unit & Integration Tests + Coverage
+# -------------------------------------------------------------
   test:
     name: Unit & Integration Tests
     needs: lint
@@ -94,9 +94,9 @@ jobs:
           name: coverage-report
           path: coverage/
 
-# ─────────────────────────────────────────────────────────────
-# Job 3 – E2E Tests (Playwright) – only on push to main
-# ─────────────────────────────────────────────────────────────
+# -------------------------------------------------------------
+# Job 3 - E2E Tests (Playwright) - only on push to main
+# -------------------------------------------------------------
   e2e:
     name: E2E Tests (Playwright)
     needs: test
@@ -147,6 +147,9 @@ jobs:
 
       - name: Build Next.js
         run: npm run build
+        env:
+          NEXTAUTH_SECRET: test-secret-ci
+          NEXTAUTH_URL: http://localhost:3000
 
       - name: Run E2E Tests
         run: npm run test:e2e
@@ -158,9 +161,9 @@ jobs:
           name: playwright-report
           path: playwright-report/
 
-# ─────────────────────────────────────────────────────────────
-# Job 4 – Docker Build & Push to Docker Hub
-# ─────────────────────────────────────────────────────────────
+# -------------------------------------------------------------
+# Job 4 - Docker Build & Push to Docker Hub
+# -------------------------------------------------------------
   docker:
     name: Build & Push Docker Image
     needs: [test]
@@ -198,102 +201,27 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-# ─────────────────────────────────────────────────────────────
-# Job 5 – CD: Deploy to Render (after Docker image pushed)
-# ─────────────────────────────────────────────────────────────
+# -------------------------------------------------------------
+# Job 5 - CD: Deploy to Vercel (after Docker image pushed)
+# -------------------------------------------------------------
+# Required GitHub Secrets:
+#   VERCEL_TOKEN      - from vercel.com/account/tokens
+#   PROD_DATABASE_URL - production Supabase connection string
+#   PROD_DIRECT_URL   - production Supabase direct URL
+# -------------------------------------------------------------
   deploy:
-    name: "CD – Deploy to Render"
+    name: CD - Deploy to Vercel
     needs: [docker, e2e]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: ${{ steps.health.outputs.live_url }}
+      url: ${{ steps.deploy.outputs.url }}
+    env:
+      VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+      VERCEL_PROJ_ID: ${{ secrets.VERCEL_PROJ_ID }}
 
     steps:
-      # ── Step 1: Trigger a new deploy via Render API ────────
-      - name: Trigger Render deployment
-        id: trigger
-        run: |
-          echo "🚀 Triggering deploy for service ${{ secrets.RENDER_SERVICE_ID }}..."
-          RESPONSE=$(curl -sS -w "\n%{http_code}" \
-            -X POST "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
-            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d '{"clearCache": "do_not_clear"}')
-
-          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
-          BODY=$(echo "$RESPONSE" | head -n -1)
-
-          echo "HTTP $HTTP_CODE"
-          echo "$BODY" | jq '.' 2>/dev/null || echo "$BODY"
-
-          if [ "$HTTP_CODE" -ge 400 ]; then
-            echo "::error::Render API returned HTTP $HTTP_CODE"
-            # Fallback: try deploy hook URL
-            echo "⚠️  Falling back to deploy hook..."
-            curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" || true
-            echo "DEPLOY_ID=hook" >> "$GITHUB_OUTPUT"
-          else
-            DEPLOY_ID=$(echo "$BODY" | jq -r '.id // .deploy.id // "unknown"')
-            echo "DEPLOY_ID=$DEPLOY_ID" >> "$GITHUB_OUTPUT"
-            echo "✅ Deploy created: $DEPLOY_ID"
-          fi
-
-      # ── Step 2: Poll Render until deploy is live or failed ─
-      - name: Wait for deployment to finish
-        id: poll
-        timeout-minutes: 10
-        run: |
-          DEPLOY_ID="${{ steps.trigger.outputs.DEPLOY_ID }}"
-          SERVICE_ID="${{ secrets.RENDER_SERVICE_ID }}"
-          API_KEY="${{ secrets.RENDER_API_KEY }}"
-
-          if [ "$DEPLOY_ID" = "hook" ] || [ "$DEPLOY_ID" = "unknown" ]; then
-            echo "⏳ Using deploy hook — waiting 120s for Render to rebuild..."
-            sleep 120
-            echo "STATUS=assumed_live" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "⏳ Polling deploy $DEPLOY_ID status..."
-          MAX_ATTEMPTS=60
-          ATTEMPT=0
-
-          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-            ATTEMPT=$((ATTEMPT + 1))
-
-            STATUS_RESPONSE=$(curl -sS \
-              -H "Authorization: Bearer $API_KEY" \
-              "https://api.render.com/v1/services/$SERVICE_ID/deploys/$DEPLOY_ID")
-
-            STATUS=$(echo "$STATUS_RESPONSE" | jq -r '.status // .deploy.status // "unknown"')
-            echo "  [$ATTEMPT/$MAX_ATTEMPTS] Status: $STATUS"
-
-            case "$STATUS" in
-              live)
-                echo "✅ Deployment is LIVE!"
-                echo "STATUS=live" >> "$GITHUB_OUTPUT"
-                exit 0
-                ;;
-              deactivated|canceled|build_failed|update_failed)
-                echo "::error::Deployment FAILED with status: $STATUS"
-                echo "$STATUS_RESPONSE" | jq '.' 2>/dev/null
-                echo "STATUS=failed" >> "$GITHUB_OUTPUT"
-                exit 1
-                ;;
-              *)
-                # Still building/deploying — wait and retry
-                sleep 10
-                ;;
-            esac
-          done
-
-          echo "::error::Deployment timed out after $MAX_ATTEMPTS attempts"
-          echo "STATUS=timeout" >> "$GITHUB_OUTPUT"
-          exit 1
-
-      # ── Step 3: Run Prisma migrations on production DB ─────
       - uses: actions/checkout@v4
 
       - name: Set up Node.js
@@ -302,7 +230,7 @@ jobs:
           node-version: '18.x'
           cache: 'npm'
 
-      - name: Install dependencies (for Prisma CLI)
+      - name: Install dependencies
         run: npm ci --ignore-scripts
 
       - name: Run production Prisma migrations
@@ -311,56 +239,53 @@ jobs:
           DIRECT_URL: ${{ secrets.PROD_DIRECT_URL }}
         run: |
           npx prisma generate
-          echo "🗄️  Running migrations on production database..."
+          echo "Running migrations on production database..."
           npx prisma migrate deploy
-          echo "✅ Migrations applied"
+          echo "Migrations applied successfully"
 
-      # ── Step 4: Health check on the live app ───────────────
-      - name: Health check
-        id: health
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel project settings
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build project artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel production
+        id: deploy
         run: |
-          RENDER_URL="${{ secrets.RENDER_APP_URL }}"
-          if [ -z "$RENDER_URL" ]; then
-            RENDER_URL="https://${{ secrets.RENDER_SERVICE_NAME }}.onrender.com"
-          fi
-          echo "live_url=$RENDER_URL" >> "$GITHUB_OUTPUT"
+          URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Deployed to: $URL"
 
-          echo "🏥 Running health check on $RENDER_URL ..."
+      - name: Health check
+        run: |
+          DEPLOY_URL="${{ steps.deploy.outputs.url }}"
+          echo "Running health check on $DEPLOY_URL ..."
           MAX_RETRIES=5
           RETRY=0
-
           while [ $RETRY -lt $MAX_RETRIES ]; do
             RETRY=$((RETRY + 1))
-            HTTP_STATUS=$(curl -sS -o /dev/null -w "%{http_code}" \
-              --max-time 30 "$RENDER_URL" || echo "000")
-
+            HTTP_STATUS=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 30 "$DEPLOY_URL" || echo "000")
             echo "  [$RETRY/$MAX_RETRIES] HTTP $HTTP_STATUS"
-
             if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
-              echo "✅ Health check PASSED (HTTP $HTTP_STATUS)"
+              echo "Health check PASSED (HTTP $HTTP_STATUS)"
               exit 0
             fi
-
-            if [ $RETRY -lt $MAX_RETRIES ]; then
-              echo "  Retrying in 15s..."
-              sleep 15
-            fi
+            [ $RETRY -lt $MAX_RETRIES ] && sleep 15
           done
+          echo "::warning::Health check returned HTTP $HTTP_STATUS"
 
-          echo "::warning::Health check got HTTP $HTTP_STATUS — the app may still be starting (Render free tier cold-start)"
-
-      # ── Step 5: Deployment summary ─────────────────────────
       - name: Deployment summary
         if: always()
         run: |
-          echo "## 🚀 Deployment Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Deployment Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "| Item | Value |" >> "$GITHUB_STEP_SUMMARY"
           echo "|------|-------|" >> "$GITHUB_STEP_SUMMARY"
           echo "| **Commit** | \`${{ github.sha }}\` |" >> "$GITHUB_STEP_SUMMARY"
           echo "| **Branch** | \`${{ github.ref_name }}\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Deploy ID** | \`${{ steps.trigger.outputs.DEPLOY_ID }}\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Status** | \`${{ steps.poll.outputs.STATUS }}\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| **URL** | ${{ steps.health.outputs.live_url }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| **Docker Tag** | \`${{ secrets.DOCKERHUB_USERNAME }}/surya-womens-health:sha-${GITHUB_SHA::7}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| **URL** | ${{ steps.deploy.outputs.url }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| **Triggered by** | @${{ github.actor }} |" >> "$GITHUB_STEP_SUMMARY"
