@@ -88,7 +88,7 @@ export default function Login() {
 
                 <Box sx={{ mt: 3, textAlign: 'center' }}>
                     <Typography variant="body2">
-                        Don't have an account?{' '}
+                        Don&apos;t have an account?{' '}
                         <Button color="secondary" onClick={() => router.push('/auth/register')}>
                             Register here
                         </Button>
