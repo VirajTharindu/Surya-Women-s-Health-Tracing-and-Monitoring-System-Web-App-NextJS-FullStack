@@ -80,7 +80,7 @@ This is a portfolio and educational project. The source code is provided for rev
 
 ## 📬 Contact
 
-**Viraj Tharindu**
-*   GitHub: [@VirajTharindu](https://github.com/VirajTharindu)
-
-*Project Link: [https://github.com/VirajTharindu/Surya-Women-s-Health-Tracing-and-Monitoring-System-Web-App-NextJS-FullStack](https://github.com/VirajTharindu/Surya-Women-s-Health-Tracing-and-Monitoring-System-Web-App-NextJS-FullStack)*
+📧 Email: virajtharindu1997@gmail.com  
+💼 LinkedIn: https://www.linkedin.com/in/viraj-tharindu/  
+🌐 Portfolio: [Visit my portfolio](https://virajtharindu.com)  
+🐙 Project Link: [https://github.com/VirajTharindu/Surya-Women-s-Health-Tracing-and-Monitoring-System-Web-App-NextJS-FullStack](https://github.com/VirajTharindu/Surya-Women-s-Health-Tracing-and-Monitoring-System-Web-App-NextJS-FullStack)*
