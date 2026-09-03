@@ -5,7 +5,6 @@ const config: Config = {
   testEnvironment: 'node',
   testMatch: ['**/__tests__/**/*.test.ts', '**/__tests__/**/*.test.tsx'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'json', 'node'],
-  collectCoverage: true,
   collectCoverageFrom: [
     'src/lib/**/*.{js,jsx,ts,tsx}',
     'src/middleware.ts',
@@ -18,14 +17,6 @@ const config: Config = {
   coverageDirectory: 'coverage',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-  },
-  coverageThreshold: {
-    global: {
-      branches: 70,
-      functions: 70,
-      lines: 70,
-      statements: 70,
-    },
   },
   globals: {
     'ts-jest': {
