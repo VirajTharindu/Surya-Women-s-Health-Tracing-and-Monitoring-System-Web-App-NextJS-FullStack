@@ -398,8 +398,8 @@ export default function VitalLogger() {
                         </Paper>
                     ) : (
                         <Stack spacing={1.5}>
-                            {filteredLogs.map((log) => (
-                                <Paper key={log.id} sx={{
+                            {filteredLogs.map((log, index) => (
+                                <Paper key={`${log.id}-${index}`} sx={{
                                     p: 2, borderRadius: 2,
                                     borderLeft: `4px solid ${VITAL_COLORS[log.vitalType]}`,
                                     transition: 'transform 0.2s, box-shadow 0.2s',
