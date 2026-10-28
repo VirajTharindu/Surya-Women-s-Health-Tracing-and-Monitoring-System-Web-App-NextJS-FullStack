@@ -427,8 +427,8 @@ export default function MenstrualTracker() {
                         {language === 'en' ? 'Recent Logs' : language === 'si' ? 'මෑත සටහන්' : 'சமீபத்திய பதிவுகள்'}
                     </Typography>
                     <Stack spacing={1.5}>
-                        {[...cycleLogs].reverse().slice(0, 5).map((log) => (
-                            <Paper key={log.id} sx={{ p: 2, borderRadius: 2, border: '1px solid #f0f0f0' }}>
+                        {[...cycleLogs].reverse().slice(0, 5).map((log, index) => (
+                            <Paper key={`${log.id}-${index}`} sx={{ p: 2, borderRadius: 2, border: '1px solid #f0f0f0' }}>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                     <Box sx={{ flex: 1 }}>
                                         <Typography fontWeight={600}>{new Date(log.date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</Typography>
